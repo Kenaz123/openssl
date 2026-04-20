@@ -421,11 +421,15 @@ static int test_ml_kem_from_data_propq(void)
     return ret;
 }
 
+#ifndef OPENSSL_NO_EC
 static const char *mlx_kem_algs[] = {
+# ifndef OPENSSL_NO_ECX
     "X25519MLKEM768",
+# endif
     "SecP256r1MLKEM768",
     "SecP384r1MLKEM1024",
 };
+#endif
 
 /*
  * Test that mlx_kem_dup() with partial selection (public-only) does not
@@ -434,6 +438,7 @@ static const char *mlx_kem_algs[] = {
  * without nulling mkey/xkey first, causing a double-free when the original
  * key was later freed.
  */
+#ifndef OPENSSL_NO_EC
 static int test_mlx_kem_dup_partial_selection(int idx)
 {
     const char *alg = mlx_kem_algs[idx];
@@ -471,7 +476,8 @@ static int test_mlx_kem_dup_partial_selection(int idx)
     if (!TEST_ptr(encctx = EVP_PKEY_CTX_new_from_pkey(testctx, keypair, NULL))
         || !TEST_int_gt(EVP_PKEY_encapsulate_init(encctx, NULL), 0)
         || !TEST_int_gt(EVP_PKEY_encapsulate(encctx, NULL, &wrpkeylen,
-                                             NULL, &genkeylen), 0)
+                                             NULL, &genkeylen),
+                        0)
         || !TEST_size_t_gt(wrpkeylen, 0)
         || !TEST_size_t_gt(genkeylen, 0))
         goto err;
@@ -484,6 +490,7 @@ err:
     EVP_PKEY_CTX_free(genctx);
     return ret;
 }
+#endif /* OPENSSL_NO_EC */
 
 int setup_tests(void)
 {
@@ -513,6 +520,8 @@ int setup_tests(void)
 
     ADD_TEST(test_ml_kem);
     ADD_TEST(test_ml_kem_from_data_propq);
+#ifndef OPENSSL_NO_EC
     ADD_ALL_TESTS(test_mlx_kem_dup_partial_selection, OSSL_NELEM(mlx_kem_algs));
+#endif
     return 1;
 }

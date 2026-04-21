@@ -423,9 +423,9 @@ static int test_ml_kem_from_data_propq(void)
 
 #ifndef OPENSSL_NO_EC
 static const char *mlx_kem_algs[] = {
-# ifndef OPENSSL_NO_ECX
+#ifndef OPENSSL_NO_ECX
     "X25519MLKEM768",
-# endif
+#endif
     "SecP256r1MLKEM768",
     "SecP384r1MLKEM1024",
 };
@@ -476,8 +476,8 @@ static int test_mlx_kem_dup_partial_selection(int idx)
     if (!TEST_ptr(encctx = EVP_PKEY_CTX_new_from_pkey(testctx, keypair, NULL))
         || !TEST_int_gt(EVP_PKEY_encapsulate_init(encctx, NULL), 0)
         || !TEST_int_gt(EVP_PKEY_encapsulate(encctx, NULL, &wrpkeylen,
-                                             NULL, &genkeylen),
-                        0)
+                            NULL, &genkeylen),
+            0)
         || !TEST_size_t_gt(wrpkeylen, 0)
         || !TEST_size_t_gt(genkeylen, 0))
         goto err;
